@@ -47,8 +47,6 @@ class RandomScreen extends StatelessWidget {
                 if (recipe.youtube != null && recipe.youtube!.isNotEmpty)
                   TextButton(
                     onPressed: () {
-                      // You can use url_launcher package for opening links
-                      // launchUrl(Uri.parse(recipe.youtube!));
                     },
                     child: Text('Watch on YouTube: ${recipe.youtube}'),
                   ),

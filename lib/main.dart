@@ -1,8 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
 
 import 'screens/home_screen.dart';
+import 'services/notification_service.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await FirebaseAuth.instance.signInAnonymously();
+
+  await NotificationService.init();
+
+  try {
+    await NotificationService.scheduleDailyNotification();
+  } catch (e) {
+    print('Notification setup failed: $e');
+  }
+
   runApp(const RecipeApp());
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/category.dart';
 import '../services/api_service.dart';
 import '../widgets/category_card.dart';
+import 'favorites_screen.dart';
 import 'meals_screen.dart';
 import 'random_screen.dart';
 
@@ -33,8 +34,18 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.shuffle),
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RandomScreen())),
-          )
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const RandomScreen()),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const FavoritesScreen()),
+            ),
+          ),
         ],
       ),
       body: Column(

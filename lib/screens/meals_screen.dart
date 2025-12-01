@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/meal.dart';
 import '../services/api_service.dart';
+import '../services/favorites_service.dart';
 import '../widgets/meal_tile.dart';
 import 'detail_screen.dart';
 
@@ -14,18 +15,23 @@ class MealsScreen extends StatefulWidget {
 
 class _MealsScreenState extends State<MealsScreen> {
   final ApiService api = ApiService();
+  final FavoritesService favoritesService = FavoritesService();
   List<Meal> meals = [];
   String query = '';
 
   @override
   void initState() {
     super.initState();
-    api.fetchMealsByCategory(widget.category).then((data) => setState(() => meals = data));
+    api.fetchMealsByCategory(widget.category).then((data) {
+      setState(() => meals = data);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final filtered = meals.where((m) => m.name.toLowerCase().contains(query.toLowerCase())).toList();
+    final filtered = meals
+        .where((m) => m.name.toLowerCase().contains(query.toLowerCase()))
+        .toList();
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.category)),
@@ -39,12 +45,34 @@ class _MealsScreenState extends State<MealsScreen> {
             ),
           ),
           Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
-              children: filtered.map((m) => MealTile(
-                meal: m,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => DetailScreen(mealId: m.id))),
-              )).toList(),
+            child: StreamBuilder<Map<String, dynamic>>(
+              stream: favoritesService.getFavorites(),
+              builder: (context, snapshot) {
+                final favorites = snapshot.data ?? {};
+                return GridView.count(
+                  crossAxisCount: 2,
+                  children: filtered.map((m) {
+                    final isFav = favorites.containsKey(m.id);
+                    return MealTile(
+                      meal: m,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => DetailScreen(mealId: m.id),
+                        ),
+                      ),
+                      isFavorite: isFav,
+                      onFavoriteToggle: () {
+                        if (isFav) {
+                          favoritesService.removeFavorite(m.id);
+                        } else {
+                          favoritesService.addFavorite(m.id, m.name, m.thumbnail);
+                        }
+                      },
+                    );
+                  }).toList(),
+                );
+              },
             ),
           ),
         ],
