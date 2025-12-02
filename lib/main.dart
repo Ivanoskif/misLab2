@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
+import 'package:timezone/data/latest.dart' as tzdata;
 
 import 'screens/home_screen.dart';
 import 'services/notification_service.dart';
@@ -9,16 +10,16 @@ import 'services/notification_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  tzdata.initializeTimeZones();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   await FirebaseAuth.instance.signInAnonymously();
-
   await NotificationService.init();
 
   try {
-    await NotificationService.scheduleDailyNotification();
+    await NotificationService.showStartupNotification();
   } catch (e) {
     print('Notification setup failed: $e');
   }

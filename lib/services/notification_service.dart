@@ -13,31 +13,27 @@ class NotificationService {
 
     await _notifications.initialize(initSettings);
   }
-
-  static Future<void> scheduleDailyNotification() async {
-    await _notifications.zonedSchedule(
+  
+  static Future<void> showStartupNotification() async {
+    await _notifications.show(
       0,
       'Recipe Reminder',
-      'Check out today\'s recipe.!',
-      _nextInstanceOfTime(20, 0),
+      'Check today\'s recipe',
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'daily_channel',
-          'Daily Notifications',
+          'startup_channel',
+          'Startup Notifications',
           importance: Importance.high,
           priority: Priority.high,
         ),
       ),
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
   static tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    var scheduled =
+    tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
     if (scheduled.isBefore(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
